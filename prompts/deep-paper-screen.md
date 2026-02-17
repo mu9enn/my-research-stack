@@ -1,9 +1,3 @@
-name: 深度研究版论文结构分析 Prompt 模板
-description: 用于复现、改进或批评论文的深度结构化分析提示，目标是拆解论文的成立条件、脆弱点与可扩展路径。
-prompt context: 输入整篇论文 PDF，AI 以审稿人/合作者/竞争者的角色进行反向工程式分析，不要做普通总结。
-场景:
-- 准备复现论文
-- 设计改进或 rebuttal
 # Deep Paper Screening Prompt Template
 
 ## Name
