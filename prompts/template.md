@@ -12,9 +12,13 @@ English description
 
 ## Prompt
 
-中文
+```text
+中文版本prompt
+```
 
-English version
+```text
+English version prompt
+```
 
 ## Use Cases
 

@@ -1,4 +1,10 @@
-# Deep Structural Paper Analysis Prompt
+name: 深度研究版论文结构分析 Prompt 模板
+description: 用于复现、改进或批评论文的深度结构化分析提示，目标是拆解论文的成立条件、脆弱点与可扩展路径。
+prompt context: 输入整篇论文 PDF，AI 以审稿人/合作者/竞争者的角色进行反向工程式分析，不要做普通总结。
+场景:
+- 准备复现论文
+- 设计改进或 rebuttal
+# Deep Paper Screening Prompt Template
 
 ## Name
 深度研究版论文结构分析 Prompt
@@ -12,8 +18,131 @@ Reverse-engineering oriented prompt for reproduction, critique, and extension. P
 
 ## Prompt
 
-中文：
+```text
+你正在对一篇论文进行深度结构化分析，目标是复现、扩展或进行方法论批评。
 
+附带的 PDF 是整篇论文。
+
+你的任务不是总结。
+你的任务是对论文进行反向工程式解析。
+
+保持精确、分析性和技术性。
+避免背景性解释、复述摘要或泛泛评论。
+
+严格按照以下结构输出。
+
+==================================================
+[1] FORMAL PROBLEM FORMULATION
+
+• 若有，给出明确的数学/目标函数表述
+• 精确说明优化或求解的对象
+• 可控变量与固定变量分别有哪些
+• 问题是否良定？为什么或为什么不？
+• 该表述成立需要哪些假设？
+
+==================================================
+[2] EXPLICIT & IMPLICIT ASSUMPTIONS
+
+将假设分为：
+
+A. 明确给出的假设
+B. 隐含但未讨论的假设
+
+对每个假设说明：
+• 为何需要
+• 违反时会发生什么
+
+==================================================
+[3] METHOD DECOMPOSITION
+
+将方法拆解为最小功能组件。
+
+对于每个组件：
+• 功能是什么
+• 移除后会破坏什么
+• 是必需还是辅助
+• 是否存在更简单的替代
+
+然后回答：
+• 哪部分最可能贡献性能提升？
+• 哪部分最脆弱？
+
+==================================================
+[4] REPRODUCIBILITY RISK ANALYSIS
+
+• 缺失的实现细节
+• 对超参的敏感度
+• 对数据集特性的依赖
+• 计算依赖（规模、硬件）
+• 复现结果的风险因素
+
+评估复现难度（1–5）。
+
+==================================================
+[5] FAILURE MODE ANALYSIS
+
+• 理论上的失效条件
+• 经验上的失效场景
+• 分布转移脆弱性
+• 过拟合风险
+• 隐藏的不稳定来源
+
+论文是否有意义地讨论这些失败？
+
+==================================================
+[6] EVALUATION STRESS TEST
+
+• 基线实现是否公平？
+• 消融实验是否充分？
+• 比较是否 apples-to-apples？
+• 指标是否与问题对齐？
+• 缺失但关键的实验是什么？
+
+如果需要设计一个额外实验来挑战论文，你会设计什么？
+
+==================================================
+[7] IMPROVEMENT PATHWAYS
+
+识别：
+
+• 参数层面的改进
+• 架构层面的改进
+• 目标函数层面的重构
+• 问题重定义的机会
+• 可扩展性扩展
+• 鲁棒性扩展
+
+按可行性对改进排序（短期 / 中期 / 长期）。
+
+==================================================
+[8] THEORETICAL & CONCEPTUAL LIMIT
+
+• 剩余的理论性空白是什么？
+• 方法是否在概念上可泛化？
+• 是否在解决代理问题？
+• 收益是基础性的还是数据集专属？
+
+==================================================
+[9] RESEARCH OPPORTUNITY EXTRACTION
+
+基于结构性弱点：
+
+生成：
+• 3 个可扩展该工作的研究问题
+• 2 个挑战该工作的研究问题
+• 1 个完全重构问题定义的研究问题
+
+==================================================
+
+严格输出规则：
+- 每个子部分最多 4 个要点。
+- 不要总结。
+- 不要重复。
+- 高信号密度。
+- 仅使用分析性语气。
+```
+
+```text
 You are conducting deep structural analysis of a research paper for potential reproduction, extension, or methodological critique.
 
 The attached PDF is the full paper.
@@ -137,15 +266,10 @@ Strict Output Rules:
 - No repetition.
 - High signal density.
 - Analytical tone only.
+```
 
 ## Use Cases
 
-场景：
-- 复现准备：重点查看 `REPRODUCIBILITY RISK ANALYSIS` 与 `METHOD DECOMPOSITION`。
-- 改进/扩展：优先 `IMPROVEMENT PATHWAYS` 与 `RESEARCH OPPORTUNITY EXTRACTION`。
-- 写 rebuttal：关注 `EVALUATION STRESS TEST` 与 `FAILURE MODE ANALYSIS`。
+复现准备：重点查看 `REPRODUCIBILITY RISK ANALYSIS` 与 `METHOD DECOMPOSITION`。
 
-Use cases:
-- Reproduction preparation
-- Method improvement / extension
-- Rebuttal and critique
+Reproduction / extension / rebuttal preparation: focus on `REPRODUCIBILITY RISK ANALYSIS` and `METHOD DECOMPOSITION`.
