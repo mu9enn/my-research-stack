@@ -17,109 +17,144 @@ Wrap an existing Python script into the team's standardized "tool" template: pro
 ## Prompt
 
 ```text
-你将把一个已有的 Python 脚本封装成我们团队统一的“工具”模板。任务目标、约束、输出目录和验收标准都在下面严格列明，请按步骤完成并自检。
+你是一名 Drug Screening Agent 工具封装专家。请把“单个源代码文件”封装为完整工具文件夹，并严格遵守以下规范与步骤。你必须直接产出代码并完成自检，不要只给建议。
 
-任务概述
+【输入信息】
+- SOURCE_CODE: {SOURCE_CODE_ABS_PATH}   # 例如 .../tool_src/xxx/as_tool/xxx_main.py
+- TOOL_ROOT: /root/lwj/wll/code/DrugAgentTools/sxy_local/tool_src
+- RESULT_ROOT: /root/lwj/wll/code/DrugAgentTools/sxy_local/tool_result/{tool_name}_result
+- TOOL_NAME: {可留空；若留空请你基于功能自动命名为英小写下划线}
+- API_PORT: {100xx}
+- ENV_NAME: {conda_or_micromamba_env_name}
 
-深入阅读并理解提供的原始脚本（完整源码），为它选择一个合适的短名 【tool_name】（英式小写且用下划线分词，例如 fix_pdb、gmx_prepare_complex），该名字应能清楚表达脚本功能。
-在仓库中创建路径： /root/lwj/wll/code/DrugAgentTools/sxy_local/tool_src/【tool_name】/as_tool，并在 .../tool_src/【tool_name】 放置 readme.md。
-在 .../as_tool 下创建并实现三个文件，接口需与现有示例（example、ref）风格一致：
-fix 模块：fix_... 或 prepare_... 的核心模块，例如 fix_pdb.py / prepare_complex.py，导出一个可被程序调用的函数（主入口名示例：repair_pdb(...) 或 prepare_complex(...)），并提供 CLI（if __name__=="__main__"）输出 JSON。
-API 服务：api_server_*.py，基于 FastAPI，暴露 /api/<主函数> 接口，接收 Pydantic 模型并返回模块函数的结果。
-客户端：tool_factory.py，实现 ToolManager 类和 call_<tool>() 方法，默认指向 http://localhost:<port>，并在 description 字段按本规范写明用途与参数。
+【总目标】
+从 SOURCE_CODE 生成并落盘一个完整封装目录：
+{TOOL_ROOT}/{tool_name}/
+  readme.md
+  as_tool/
+    {tool_name}.py                # wrapper 主模块（可编程入口 + CLI JSON）
+    api_server_{tool_name}.py     # FastAPI
+    tool_factory.py               # ToolManager 客户端
 
-Description 写法（强制标准）
+==================================================
+一、封装原则（强制）
+==================================================
+1) 优先“委托源代码”，禁止重写核心算法  
+- wrapper 必须优先通过 importlib 或直接 import 复用 SOURCE_CODE 的 parser/main/核心函数。
+- 仅做参数整形、路径管理、错误处理、结果结构化。
+- 保留源脚本 stdout/stderr（不要吞日志），但 wrapper 最终要返回结构化 dict，CLI 最终 print JSON。
 
-必须严格遵守下面三段结构（示例）：
-一句话功能简介（一句话）
-Args: 列出所有输入参数，类型与含义（逐行）
-Return: 描述返回结构与字段说明
+2) 输入参数最小暴露  
+- 仅暴露业务核心参数（由 SOURCE_CODE 的“使用示例/核心入口签名/argparse 主参数”推导）。
+- 输出路径类参数（如 output_dir/out_dir/save_dir）默认不对外暴露，统一由 wrapper 内部自动生成。
+- 非核心但 SOURCE_CODE 必需参数：在 wrapper 内提供合理默认值。
 
-示例（few-shot）：
-is_valid_smiles 示例：
-"""Check if the input SMILES string is valid
-Args:
-smiles_list (List[str]): List of input SMILES strings
-Return:
-status (str): success/partial_success/error
-msg (str): message
-valid_res (List[dict]): List of dict, each containing the keys 'smiles' and 'is_valid'.
---smiles (str): A SMILES string of smiles_list
---is_valid (bool): Is the SMILES valid or not"""
-fix_pdb 示例简短句：
-"""使用 PDBFixer 修复 PDB 文件，返回修复结果和输出路径。
-Args:
-input_path (str): 输入 PDB 文件路径（必需）。
-output_path (str): 输出 PDB 文件路径（必需）。
-add_hydrogens (bool): 是否添加氢原子（--add-hydrogens）。
-Return:
-status (str): success/error
-msg (str): 人类可读的信息
-output_file (str | None): 修复后的文件路径（成功时返回）"""
+3) 输出统一结构  
+所有成功/失败分支都返回：
+{
+  "status": "success|error|partial_success",
+  "msg": "...",
+  ...关键业务字段...
+}
+- 若产出文件：返回 output_dir / 关键文件路径
+- 若产出指标：返回 metrics/pred_scores/affinity 等具体字段
+- 禁止泛化字段名 data/extra（除非确实不可避免）
 
-封装细则（必须满足）
+4) 结果目录策略  
+- 固定根目录 RESULT_ROOT。
+- 每次运行创建唯一子目录：{tool_name}_{timestamp}_{short_uuid}，避免覆盖。
+- dry-run 也要创建可追踪目录并返回 output_dir。
 
-模块函数签名必须清晰、可编程调用（不要只保留 CLI）。
-CLI：与原脚本参数一致，--help 显示原参数说明；脚本运行应输出 JSON（print JSON）。
-API：端点名为 /api/<短名>（例如 /api/fix_pdb），端口建议 1000X 系列（如 10008 / 10009），可在本地用 uvicorn 启动。
-客户端：ToolManager 包含 tool 描述（名称/endpoint/method/description），并提供超时参数与异常返回格式：{"status":"error","msg":...}。
-README：在 .../tool_src/【tool_name】/readme.md 写入“三步验证命令”（启动 API、用 tool_factory 调用、在环境中直接运行 CLI），示例要给出 micromamba run -n <env> 或 conda activate 的命令，并说明环境依赖（如 gmx/obabel/pdbfixer/add_hydrogen_plus.py 等）。
+5) description 强制格式（tool_factory）  
+必须是三段：
+- 首句：一句话功能与适用场景（英文，不得写“this wraps...”）
+- Args:
+  name (type): meaning, default...
+- Return:
+  field (type): meaning...
 
-实现输出（必须创建的文件）
+==================================================
+二、你必须执行的实现步骤
+==================================================
+Step 1. 深读 SOURCE_CODE，提取真实接口
+- 找以下信息并列出：
+  a) 主入口函数/CLI 入口（main/build_parser/run_*）
+  b) 核心必需参数、可选参数、默认值、类型
+  c) 真实输出（文件、目录、指标、日志）
+  d) 失败模式（常见异常、参数错误）
+- 若 SOURCE_CODE 与示例注释冲突，以“函数签名 + argparse 定义 + return/输出行为”为准。
 
-/root/lwj/wll/code/DrugAgentTools/sxy_local/tool_src/【tool_name】/as_tool/ 包含：
-【tool_name】.py（主模块，导出 main 函数/具体函数并提供 CLI）
-api_server_【tool_name】.py（FastAPI 服务）
-tool_factory.py（ToolManager 客户端）
-/root/lwj/wll/code/DrugAgentTools/sxy_local/tool_src/【tool_name】/readme.md 包含三步验证命令与说明。
+Step 2. 生成 wrapper：as_tool/{tool_name}.py
+- 对外暴露一个程序化入口：run_{tool_name}(...) -> dict
+- 提供 CLI：python {tool_name}.py ...，最终 stdout 输出 JSON
+- wrapper 内实现：
+  - mode/参数归一化（必要时支持兼容别名）
+  - 自动创建 run_dir（RESULT_ROOT 下）
+  - 调用 SOURCE_CODE（优先 importlib + main/build_parser 或核心函数）
+  - 捕获异常并返回 {"status":"error","msg":...}
+  - 解析关键结果（指标/关键文件路径）并放入返回 dict
+- 若委托执行期间需要改写 `sys.argv`/cwd，执行后必须恢复现场。
 
-验收标准（检查项）
+Step 3. 生成 API：api_server_{tool_name}.py
+- FastAPI + `/health` 返回 {"status":"healthy"}
+- POST `/api/{tool_name}`，请求模型字段与 wrapper 暴露参数严格一致（不要多、不要少）
+- API 只负责参数接收与调用 wrapper，不复制业务逻辑
+- 返回 wrapper 原样 dict
 
-代码风格与示例 example / ref 一致（导入方式、返回 dict 结构）。
-description 严格采用“功能句 + Args + Return”格式，列齐所有参数。
-CLI：python <module>.py -i ... -o ... 能运行并返回 JSON（或在缺依赖时返回明确错误 JSON）。
-API：uvicorn api_server_...:app --app-dir <path> --host 0.0.0.0 --port <port> --reload 能启动并健康检查 /health 返回 {"status":"healthy"}。
-客户端：ToolManager.call_<tool>() 在 API 可用时能返回 JSON；在 API 不可达时返回 {"status":"error","msg":...}。
-README 中的三步命令可复制粘贴执行并能复现验证过程（或给出替代的 conda 命令）。
+Step 4. 生成 ToolManager：tool_factory.py
+- `self.tools["{tool_name}"]` 至少包含 endpoint/method/description
+- `description` 严格按“首句 + Args + Return”多行格式
+- 提供 `call_{tool_name}(payload: dict, timeout: Optional[int]=None) -> dict`
+- API 不可达或异常时，统一返回 {"status":"error","msg": "..."}。
 
-自检流程（自动/人工复核）
+Step 5. 生成 readme.md（3步验证）
+必须包含可复制命令：
+1) 启动 API（uvicorn）
+2) ToolManager 调用示例（python heredoc）
+3) 直接 CLI 调用示例（尽量提供轻量参数，如 dry-run）
+并注明环境依赖与安装提示（conda/micromamba）。
 
-代码静态检查：能 import 新模块并显示 help()；CLI --help 显示参数。
-运行 API：在目标环境（示例名 tool_env）用 uvicorn 启动，访问 http://localhost:<port>/health，应返回 JSON。
-客户端调用：执行 python - <<'PY' ... 的一次示例，确认 JSON 返回并且 work_dir 或 output_file（如适用）存在。
-CLI 运行：用 micromamba/conda run -n <env> 直接运行主模块的一次示例（不必执行长时间 MD——如有长任务，传 --no-md 或 full_md=False），检查是否生成预期中间输出。
+==================================================
+三、一致性与防错修复（必须自动执行）
+==================================================
+你必须做以下“对齐检查”，并自动修复不一致：
+1) wrapper 签名 vs API RequestModel 字段：完全一致
+2) API 字段 vs tool_factory description Args：完全一致
+3) wrapper 返回字段 vs tool_factory description Return：完全一致
+4) 命名统一：禁止同时出现 out_dir/output_dir/save_dir 混用
+5) CLI flag 到 wrapper 参数映射表：在最终说明中列出
+6) 对 SOURCE_CODE 不支持的参数，禁止透传（避免 argparse unrecognized arguments）
 
-Prompt-engineering 技巧与 few-shot
+==================================================
+四、验收与自检（必须执行并报告）
+==================================================
+A. 静态检查
+- 对 4 个关键文件做语法/诊断检查，确保无错误：
+  - as_tool/{tool_name}.py
+  - as_tool/api_server_{tool_name}.py
+  - as_tool/tool_factory.py
+  - SOURCE_CODE
+B. 运行级最小验证（能跑则跑）
+1) `python as_tool/{tool_name}.py --help`
+2) dry-run CLI 一次，检查返回 JSON 与 output_dir
+3) 启动 API 后请求 `/health`
+4) 用 ToolManager 发起一次最小 payload，检查 JSON 返回
+- 若环境限制无法完整执行，明确写“已完成到哪一步 + 阻塞原因 + 替代验证命令”。
 
-给出 2 个短示例（示例 1：fix_pdb，示例 2：gmx_prepare_complex），展示期望的 description、API 路径與 tool_factory 返回格式（在实际使用之前请替换为真实脚本）。
-要求模型在生成代码和文件后列出“自检清单”并执行（尽量自动化执行步骤 1-3）。
-要求在每次修改后只提交最小变更补丁（用 apply_patch 风格），并报告新增/修改的文件路径。
-要求在生成文件时把模块导入路径写为相对包路径（如 from tool_src.gmxMMPBSA_scripts.prepare_complex_v4 import ComplexPreparation），以便在项目根目录运行。
+==================================================
+五、输出格式（你最终回复必须包含）
+==================================================
+1) 变更清单：新增/修改文件路径
+2) 调用链摘要：SOURCE_CODE -> wrapper -> API -> ToolManager（每层职责一句话）
+3) CLI flag -> wrapper 参数映射表
+4) 最终 description 文本（可直接粘贴到 tool_factory）
+5) 自检结果（步骤A/B逐条通过或失败原因）
+6) 一键最小复现命令（不超过6行）
 
-few-shot 示例（短）
-
-示例 A（fix_pdb 简要）：
-tool_name: fix_pdb
-主模块导出 repair_pdb(input_path, output_path, add_hydrogens=False, ph=7.0, ...) -> dict
-API: /api/fix_pdb
-客户端: ToolManager.call_fix_pdb(input_path, output_path, ...) -> dict
-description：见之前示例（功能句 + Args + Return）
-
-示例 B（gmx_prepare_complex 简要）：
-tool_name: gmx_prepare_complex
-主模块导出 prepare_complex(protein, ligand, work_dir='.', full_md=False, ...) -> dict
-API: /api/prepare_complex
-客户端: ToolManager.call_prepare_complex(payload) -> dict
-README: 三步验证命令（启动 API、client 调用、直接 CLI）
-
-交付格式（对接 CI / 开发者）
-
-修改以补丁方式提交（列出新增/修改文件）
-附带一个短的验证脚本/命令片段，便于 reviewer 一键复现最小功能（例如只做“诊断/不执行长任务”模式）
-
-结束语
-
-完成后请把 tool_name、新增文件路径與短的“如何运行一次快速验证”的命令行摘要返回給我（不超过 6 行），並执行自检清单中至少第 1-3 步（能在当前环境中执行的則执行并报告結果；若受限則給出明确说明）。
+注意：
+- 仅做最小必要改动，不改无关文件。
+- 保持现有代码风格。
+- 若发现潜在 500 高风险点（参数不匹配、返回字段漂移、透传未知参数），必须在本次一次性修复。
 ```
 
 
