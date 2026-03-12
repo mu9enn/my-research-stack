@@ -56,7 +56,7 @@ Wrap an existing Python script into the team's standardized "tool" template: pro
   "msg": "...",
   ...关键业务字段...
 }
-- 若产出文件：返回 output_dir / 关键文件路径
+- 若产出文件：返回 output_dir / 关键文件路径（文件路径要写相对于output_dir的相对路径，而不是完整绝对路径）
 - 若产出指标：返回 metrics/pred_scores/affinity 等具体字段
 - 禁止泛化字段名 data/extra（除非确实不可避免）
 
