@@ -63,3 +63,28 @@ ssh-keygen -t ed25519 -C "sun4382@gmail.com"
 ssh -T git@github.com
 ```
 
+---
+
+## PJLAB开发机：
+
+可让 SSH 流量走你的 HTTP 代理。
+
+### 步骤：
+
+1. 安装 `connect-proxy`（或 `corkscrew`）：
+   ```bash
+   sudo apt update && sudo apt install connect-proxy -y
+   ```
+
+2. 编辑 `~/.ssh/config`，添加：
+   ```ssh
+   Host github.com
+       Hostname github.com
+       Port 22
+       User git
+       IdentityFile ~/.ssh/id_ed25519
+       ProxyCommand connect -H httpproxy-headless.kubebrain.svc.pjlab.local:3128 %h %p
+   ```
+
+   > 💡 如果你的代理需要认证，格式为：`ProxyCommand connect -H user:pass@proxy:port %h %p`
+
