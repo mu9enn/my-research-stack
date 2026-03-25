@@ -4,7 +4,7 @@
 
 ---
 
-## 1. 安装 Git
+## 安装 Git
 
 首先需要下载并安装 Git 工具。
 
@@ -17,7 +17,17 @@
 
 ---
 
-## 2. 生成 SSH 密钥
+## 配置 Git 用户信息（"Login"）
+
+
+```bash
+git config --global user.name “mu9enn”
+git config --global user.email "sun4382@gmail.com"
+```
+
+---
+
+## 生成 SSH 密钥
 
 ```bash
 ssh-keygen -t ed25519 -C "sun4382@gmail.com"
@@ -26,7 +36,7 @@ ssh-keygen -t ed25519 -C "sun4382@gmail.com"
 
 ---
 
-## 3. 获取公钥内容
+## 获取公钥内容
 
 你需要将生成的**公钥**复制到代码托管平台。
 
@@ -40,12 +50,12 @@ ssh-keygen -t ed25519 -C "sun4382@gmail.com"
 
 ---
 
-## 4. 添加公钥到托管平台
+## 添加公钥到托管平台
 
 
 ---
 
-## 5. 测试连接
+## 测试连接
 
 在终端输入以下命令测试 SSH 连接是否成功：
 
