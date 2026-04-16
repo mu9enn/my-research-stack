@@ -43,11 +43,7 @@ STRICT TRANSFORMATION RULES:
 - Ensure a space between function name and parentheses:
   E_img(X_i, θ_img) → E_img (X_i, θ_img)
 
-7. Merge fragmented inline math when possible:
-- $X_i$, $Y_i$, $S_i$ → $X_i, Y_i, S_i$
-- Avoid excessive small math segments
-
-8. Do NOT change:
+7. Do NOT change:
 - Mathematical meaning
 - Variable names
 - Sentence structure (except minimal spacing fixes)
