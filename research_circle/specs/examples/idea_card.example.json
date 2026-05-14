@@ -1,0 +1,22 @@
+{
+  "title": "Memory-grounded planner distillation for long-horizon agents",
+  "hypothesis": "Externalized planning memory can improve multi-step tool-use success rate with lower token budget.",
+  "novelty_source": [
+    "Combining planner memory distillation with tool-feedback loops",
+    "Benchmarking under interruption-heavy long-horizon settings"
+  ],
+  "method_sketch": "Train a planner head with memory snapshots and tool trajectory summaries.",
+  "experiment_sketch": "Evaluate on long-horizon agent tasks with interruption and recovery metrics.",
+  "risks": ["Weak generalization across tool APIs", "Label quality for memory summaries"],
+  "similar_work": [
+    {
+      "paper_id": "arxiv:2501.00001",
+      "reason": "Uses memory but lacks distillation objective"
+    }
+  ],
+  "scores": {
+    "novelty": 74,
+    "feasibility": 70,
+    "impact": 78
+  }
+}

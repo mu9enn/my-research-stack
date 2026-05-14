@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual envs
+.venv/
+venv/
+
+# Local runs and outputs
+runs/*
+!runs/.gitkeep
+
+# Reference repositories are cloned locally via SSH and not committed
+references/*
+!references/README.md
+!references/LOCKFILE.md
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

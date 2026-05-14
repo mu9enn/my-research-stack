@@ -1,0 +1,32 @@
+{
+  "idea_title": "Memory-grounded planner distillation for long-horizon agents",
+  "plan_3_days": [
+    "Finalize task definition and metrics",
+    "Build minimal data pipeline",
+    "Run first baseline"
+  ],
+  "plan_2_weeks": [
+    "Implement planner distillation variant",
+    "Run ablations on memory granularity",
+    "Collect error taxonomy"
+  ],
+  "plan_1_month": [
+    "Scale experiments and confidence intervals",
+    "Compare against 3 strong baselines",
+    "Prepare draft figures and claims"
+  ],
+  "resource_budget": {
+    "compute_hours": 320,
+    "people": 2,
+    "notes": "Prioritize short feedback loops before full-scale training."
+  },
+  "milestones": [
+    "M1: baseline reproducible",
+    "M2: method beats baseline on primary metric",
+    "M3: robustness validated"
+  ],
+  "fallbacks": [
+    "Shift to retrieval-augmented planner memory",
+    "Reduce scope to a single benchmark family"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "idea_title": "Memory-grounded planner distillation for long-horizon agents",
+  "scores": {
+    "novelty": 72,
+    "feasibility": 68,
+    "impact": 76
+  },
+  "objections": [
+    {
+      "reviewer": "R1",
+      "severity": "high",
+      "text": "Need stronger baseline selection justification."
+    },
+    {
+      "reviewer": "R2",
+      "severity": "medium",
+      "text": "Interruption metric definition is currently ambiguous."
+    }
+  ],
+  "revision_suggestions": [
+    "Add two recent long-horizon agent baselines",
+    "Clarify interruption/recovery metric protocol"
+  ]
+}

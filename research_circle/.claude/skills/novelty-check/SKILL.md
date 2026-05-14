@@ -1,0 +1,1 @@
+../../../skills/novelty-check/SKILL.md

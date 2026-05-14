@@ -1,0 +1,1 @@
+../../agents/literature-scout.md

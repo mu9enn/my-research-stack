@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://full-circle.local/schemas/paper_bank_record.schema.json",
+  "title": "PaperBankRecord",
+  "type": "object",
+  "required": [
+    "id",
+    "source",
+    "title",
+    "year",
+    "venue",
+    "abstract",
+    "url",
+    "relevance",
+    "evidence"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "source": { "type": "string", "enum": ["arxiv", "semantic_scholar", "openalex"] },
+    "title": { "type": "string" },
+    "year": { "type": "integer", "minimum": 1900 },
+    "venue": { "type": "string" },
+    "abstract": { "type": "string" },
+    "url": { "type": "string", "format": "uri" },
+    "authors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "relevance": { "type": "number", "minimum": 0, "maximum": 1 },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

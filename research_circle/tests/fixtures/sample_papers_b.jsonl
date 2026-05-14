@@ -1,0 +1,2 @@
+{"id":"openalex:9","source":"openalex","title":"Long Horizon Agents","year":2025,"venue":"Unknown","abstract":"Agents plan with tools and memory","url":"https://openalex.org/W9","authors":["A"],"relevance":0.7,"evidence":["q:agents"]}
+{"id":"s2:3","source":"semantic_scholar","title":"Tool Use for Agents","year":2023,"venue":"ACL","abstract":"tool use","url":"https://www.semanticscholar.org/paper/3","authors":["C"],"relevance":0.9,"evidence":["q:tool"]}
