@@ -4,14 +4,35 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUNS_DIR="$ROOT_DIR/runs"
 
+CANONICAL_STAGES=(
+  "intake"
+  "frontier-radar"
+  "literature-search"
+  "literature-map"
+  "gap-mining"
+  "taste-audit"
+  "abstraction-lift"
+  "idea-tree-search"
+  "claim-novelty-check"
+  "proposal-tournament"
+  "construct-validity-audit"
+  "research-planning"
+  "run-postmortem"
+)
+
+OPTIONAL_STAGES=(
+  "frontier-radar"
+  "run-postmortem"
+)
+
 usage() {
   cat <<USAGE
-Full Circle CLI
+Full Circle CLI (Research Circle v2)
 
 Usage:
   ./bin/fc init-run --topic <text> [--run-id <id>] [--language zh|en]
   ./bin/fc status --run-id <id>
-  ./bin/fc checkpoint --run-id <id> --stage <stage> --decision approved|needs_revision|blocked [--note <text>]
+  ./bin/fc checkpoint --run-id <id> --stage <stage> --decision approved|needs_revision|blocked [--note <text>] [--taste-target <target>] [--risk-preference <pref>] [--desired-abstraction-level <level>] [--must-not-be <csv>] [--main-objection <text>] [--pivot-permission <mode>]
 USAGE
 }
 
@@ -27,6 +48,176 @@ slugify() {
 
 now_utc() {
   date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+normalize_stage() {
+  local stage="$1"
+  case "$stage" in
+    literature-review) echo "literature-map" ;;
+    idea-generation) echo "idea-tree-search" ;;
+    novelty-check) echo "claim-novelty-check" ;;
+    proposal-ranking) echo "proposal-tournament" ;;
+    *) echo "$stage" ;;
+  esac
+}
+
+is_known_stage() {
+  local stage="$1"
+  local s
+  for s in "${CANONICAL_STAGES[@]}"; do
+    if [[ "$s" == "$stage" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+is_optional_stage() {
+  local stage="$1"
+  local s
+  for s in "${OPTIONAL_STAGES[@]}"; do
+    if [[ "$s" == "$stage" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+primary_artifact_for_stage() {
+  local stage="$1"
+  case "$stage" in
+    intake) echo "research_brief.json" ;;
+    frontier-radar) echo "frontier_radar.md" ;;
+    literature-search) echo "paper_bank.jsonl" ;;
+    literature-map) echo "literature_map.md" ;;
+    gap-mining) echo "gap_analysis.md" ;;
+    taste-audit) echo "taste_audit.md" ;;
+    abstraction-lift) echo "problem_reframing_ladder.md" ;;
+    idea-tree-search) echo "idea_tree.json" ;;
+    claim-novelty-check) echo "claim_graph.json" ;;
+    proposal-tournament) echo "ranked_proposals.md" ;;
+    construct-validity-audit) echo "construct_validity_report.md" ;;
+    research-planning) echo "research_plan.md" ;;
+    run-postmortem) echo "run_postmortem.md" ;;
+    *) echo "" ;;
+  esac
+}
+
+file_status() {
+  local file="$1"
+  if [[ -s "$file" ]]; then
+    echo "done"
+  elif [[ -e "$file" ]]; then
+    echo "created"
+  else
+    echo "missing"
+  fi
+}
+
+checkpoint_decision() {
+  local path="$1"
+  if [[ ! -f "$path" ]]; then
+    echo "n/a"
+    return
+  fi
+  local decision
+  decision="$(grep -E '"decision"' "$path" | head -n1 | sed -E 's/.*"decision"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')"
+  if [[ -z "$decision" ]]; then
+    decision="unknown"
+  fi
+  echo "$decision"
+}
+
+json_escape() {
+  echo -n "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+json_array_from_csv() {
+  local csv="$1"
+  local out=""
+  local item
+  local arr=()
+  local first=1
+
+  if [[ -z "${csv// }" ]]; then
+    echo ""
+    return
+  fi
+
+  IFS=',' read -r -a arr <<< "$csv"
+  for item in "${arr[@]}"; do
+    item="$(echo "$item" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+    if [[ -z "$item" ]]; then
+      continue
+    fi
+    if [[ "$first" -eq 1 ]]; then
+      out="    \"$(json_escape "$item")\""
+      first=0
+    else
+      out+=$',\n'
+      out+="    \"$(json_escape "$item")\""
+    fi
+  done
+
+  if [[ -z "$out" ]]; then
+    echo ""
+    return
+  fi
+
+  echo "$out"
+}
+
+write_checkpoint_file() {
+  local file="$1"
+  local stage="$2"
+  local decision="$3"
+  local note="$4"
+  local taste_target="$5"
+  local risk_preference="$6"
+  local desired_abstraction_level="$7"
+  local must_not_be_csv="$8"
+  local main_objection="$9"
+  local pivot_permission="${10}"
+
+  local escaped_note escaped_main
+  escaped_note="$(json_escape "$note")"
+  escaped_main="$(json_escape "$main_objection")"
+  local must_not_be_lines
+  must_not_be_lines="$(json_array_from_csv "$must_not_be_csv")"
+
+  if [[ -n "$must_not_be_lines" ]]; then
+    cat > "$file" <<JSON
+{
+  "stage": "$stage",
+  "decision": "$decision",
+  "note": "$escaped_note",
+  "taste_target": "$taste_target",
+  "risk_preference": "$risk_preference",
+  "desired_abstraction_level": "$desired_abstraction_level",
+  "must_not_be": [
+$must_not_be_lines
+  ],
+  "main_objection": "$escaped_main",
+  "pivot_permission": "$pivot_permission",
+  "updated_at": "$(now_utc)"
+}
+JSON
+  else
+    cat > "$file" <<JSON
+{
+  "stage": "$stage",
+  "decision": "$decision",
+  "note": "$escaped_note",
+  "taste_target": "$taste_target",
+  "risk_preference": "$risk_preference",
+  "desired_abstraction_level": "$desired_abstraction_level",
+  "must_not_be": [],
+  "main_objection": "$escaped_main",
+  "pivot_permission": "$pivot_permission",
+  "updated_at": "$(now_utc)"
+}
+JSON
+  fi
 }
 
 init_run() {
@@ -63,6 +254,7 @@ init_run() {
 
   local run_dir="$RUNS_DIR/$run_id"
   mkdir -p "$run_dir/checkpoints" "$run_dir/artifacts" "$run_dir/logs"
+
   local escaped_topic
   escaped_topic="${topic//\"/\\\"}"
 
@@ -72,61 +264,45 @@ init_run() {
   "topic": "$escaped_topic",
   "language": "$language",
   "mode": "human-in-the-loop",
+  "workflow": "research-circle-v2",
   "created_at": "$(now_utc)",
   "stage_order": [
     "intake",
+    "frontier-radar",
     "literature-search",
-    "literature-review",
+    "literature-map",
     "gap-mining",
-    "idea-generation",
-    "novelty-check",
-    "proposal-ranking",
-    "research-planning"
+    "taste-audit",
+    "abstraction-lift",
+    "idea-tree-search",
+    "claim-novelty-check",
+    "proposal-tournament",
+    "construct-validity-audit",
+    "research-planning",
+    "run-postmortem"
   ]
 }
 JSON
 
   local cp_stage
-  for cp_stage in intake literature-review gap-mining idea-generation proposal-ranking research-planning; do
-    cat > "$run_dir/checkpoints/$cp_stage.json" <<JSON
-{
-  "stage": "$cp_stage",
-  "decision": "pending",
-  "note": "",
-  "updated_at": ""
-}
-JSON
+  for cp_stage in "${CANONICAL_STAGES[@]}"; do
+    write_checkpoint_file \
+      "$run_dir/checkpoints/$cp_stage.json" \
+      "$cp_stage" \
+      "pending" \
+      "" \
+      "main-track" \
+      "balanced" \
+      "framework" \
+      "" \
+      "" \
+      "moderate"
   done
 
   touch "$run_dir/logs/tool_calls.log"
 
   echo "Created run: $run_id"
   echo "Path: $run_dir"
-}
-
-file_status() {
-  local file="$1"
-  if [[ -s "$file" ]]; then
-    echo "done"
-  elif [[ -e "$file" ]]; then
-    echo "created"
-  else
-    echo "missing"
-  fi
-}
-
-checkpoint_decision() {
-  local path="$1"
-  if [[ ! -f "$path" ]]; then
-    echo "n/a"
-    return
-  fi
-  local decision
-  decision="$(grep -E '"decision"' "$path" | head -n1 | sed -E 's/.*"decision"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')"
-  if [[ -z "$decision" ]]; then
-    decision="unknown"
-  fi
-  echo "$decision"
 }
 
 show_status() {
@@ -136,7 +312,8 @@ show_status() {
       --run-id)
         run_id="$2"; shift 2 ;;
       *)
-        echo "Unknown option: $1" >&2; exit 1 ;;
+        echo "Unknown option: $1" >&2
+        exit 1 ;;
     esac
   done
 
@@ -154,17 +331,23 @@ show_status() {
   echo "Run: $run_id"
   echo "Path: $run_dir"
   echo
-  printf "%-20s %-12s %-16s\n" "Stage" "Artifact" "Checkpoint"
-  printf "%-20s %-12s %-16s\n" "--------------------" "------------" "----------------"
+  printf "%-26s %-12s %-16s %-10s\n" "Stage" "Artifact" "Checkpoint" "Optional"
+  printf "%-26s %-12s %-16s %-10s\n" "--------------------------" "------------" "----------------" "----------"
 
-  printf "%-20s %-12s %-16s\n" "intake" "$(file_status "$run_dir/artifacts/research_brief.json")" "$(checkpoint_decision "$run_dir/checkpoints/intake.json")"
-  printf "%-20s %-12s %-16s\n" "literature-search" "$(file_status "$run_dir/artifacts/paper_bank.jsonl")" "n/a"
-  printf "%-20s %-12s %-16s\n" "literature-review" "$(file_status "$run_dir/artifacts/literature_map.md")" "$(checkpoint_decision "$run_dir/checkpoints/literature-review.json")"
-  printf "%-20s %-12s %-16s\n" "gap-mining" "$(file_status "$run_dir/artifacts/gap_analysis.md")" "$(checkpoint_decision "$run_dir/checkpoints/gap-mining.json")"
-  printf "%-20s %-12s %-16s\n" "idea-generation" "$(file_status "$run_dir/artifacts/ideas.json")" "$(checkpoint_decision "$run_dir/checkpoints/idea-generation.json")"
-  printf "%-20s %-12s %-16s\n" "novelty-check" "$(file_status "$run_dir/artifacts/novelty_check.md")" "n/a"
-  printf "%-20s %-12s %-16s\n" "proposal-ranking" "$(file_status "$run_dir/artifacts/ranked_proposals.md")" "$(checkpoint_decision "$run_dir/checkpoints/proposal-ranking.json")"
-  printf "%-20s %-12s %-16s\n" "research-planning" "$(file_status "$run_dir/artifacts/research_plan.md")" "$(checkpoint_decision "$run_dir/checkpoints/research-planning.json")"
+  local stage artifact_file optional_flag
+  for stage in "${CANONICAL_STAGES[@]}"; do
+    artifact_file="$(primary_artifact_for_stage "$stage")"
+    optional_flag="no"
+    if is_optional_stage "$stage"; then
+      optional_flag="yes"
+    fi
+
+    printf "%-26s %-12s %-16s %-10s\n" \
+      "$stage" \
+      "$(file_status "$run_dir/artifacts/$artifact_file")" \
+      "$(checkpoint_decision "$run_dir/checkpoints/$stage.json")" \
+      "$optional_flag"
+  done
 }
 
 write_checkpoint() {
@@ -172,6 +355,12 @@ write_checkpoint() {
   local stage=""
   local decision=""
   local note=""
+  local taste_target="main-track"
+  local risk_preference="balanced"
+  local desired_abstraction_level="framework"
+  local must_not_be=""
+  local main_objection=""
+  local pivot_permission="moderate"
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -183,13 +372,32 @@ write_checkpoint() {
         decision="$2"; shift 2 ;;
       --note)
         note="$2"; shift 2 ;;
+      --taste-target)
+        taste_target="$2"; shift 2 ;;
+      --risk-preference)
+        risk_preference="$2"; shift 2 ;;
+      --desired-abstraction-level)
+        desired_abstraction_level="$2"; shift 2 ;;
+      --must-not-be)
+        must_not_be="$2"; shift 2 ;;
+      --main-objection)
+        main_objection="$2"; shift 2 ;;
+      --pivot-permission)
+        pivot_permission="$2"; shift 2 ;;
       *)
-        echo "Unknown option: $1" >&2; exit 1 ;;
+        echo "Unknown option: $1" >&2
+        exit 1 ;;
     esac
   done
 
   if [[ -z "$run_id" || -z "$stage" || -z "$decision" ]]; then
     echo "--run-id, --stage, --decision are required" >&2
+    exit 1
+  fi
+
+  stage="$(normalize_stage "$stage")"
+  if ! is_known_stage "$stage"; then
+    echo "Unknown stage: $stage" >&2
     exit 1
   fi
 
@@ -201,23 +409,23 @@ write_checkpoint() {
   esac
 
   local run_dir="$RUNS_DIR/$run_id"
-  local file="$run_dir/checkpoints/$stage.json"
   if [[ ! -d "$run_dir" ]]; then
     echo "Run not found: $run_id" >&2
     exit 1
   fi
 
-  local escaped_note
-  escaped_note="${note//\"/\\\"}"
-
-  cat > "$file" <<JSON
-{
-  "stage": "$stage",
-  "decision": "$decision",
-  "note": "$escaped_note",
-  "updated_at": "$(now_utc)"
-}
-JSON
+  local file="$run_dir/checkpoints/$stage.json"
+  write_checkpoint_file \
+    "$file" \
+    "$stage" \
+    "$decision" \
+    "$note" \
+    "$taste_target" \
+    "$risk_preference" \
+    "$desired_abstraction_level" \
+    "$must_not_be" \
+    "$main_objection" \
+    "$pivot_permission"
 
   echo "Checkpoint updated: $file"
 }

@@ -1,32 +1,32 @@
 {
-  "idea_title": "Memory-grounded planner distillation for long-horizon agents",
+  "idea_title": "Mechanism-indexed evaluation protocol for multi-step decision pipelines",
   "plan_3_days": [
-    "Finalize task definition and metrics",
-    "Build minimal data pipeline",
-    "Run first baseline"
+    "Finalize thesis-aligned metrics",
+    "Implement minimal probing pipeline",
+    "Run one reproducible baseline"
   ],
   "plan_2_weeks": [
-    "Implement planner distillation variant",
-    "Run ablations on memory granularity",
-    "Collect error taxonomy"
+    "Expand to multiple task families",
+    "Add stress/intervention diagnostics",
+    "Collect failure-mode taxonomy"
   ],
   "plan_1_month": [
-    "Scale experiments and confidence intervals",
-    "Compare against 3 strong baselines",
-    "Prepare draft figures and claims"
+    "Scale evaluations and confidence intervals",
+    "Run strong baseline suite",
+    "Prepare claim-evidence matrix and draft figures"
   ],
   "resource_budget": {
-    "compute_hours": 320,
+    "compute_hours": 280,
     "people": 2,
-    "notes": "Prioritize short feedback loops before full-scale training."
+    "notes": "Prioritize fast feedback before full-scale runs."
   },
   "milestones": [
     "M1: baseline reproducible",
-    "M2: method beats baseline on primary metric",
-    "M3: robustness validated"
+    "M2: mechanism-indexed signal is stable",
+    "M3: thesis-supported robustness insight"
   ],
   "fallbacks": [
-    "Shift to retrieval-augmented planner memory",
-    "Reduce scope to a single benchmark family"
+    "Narrow scope to one task family with stronger diagnostics",
+    "Publish negative results with failure taxonomy"
   ]
 }

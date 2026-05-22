@@ -1,32 +1,32 @@
-# Skill: proposal-ranking
+# Skill: proposal-ranking (Compatibility Alias)
 
 ## Purpose
 
-从候选 ideas 中形成 1-3 个深度 proposal 并排序。
+兼容旧阶段名。执行逻辑迁移到 `proposal-tournament`，canonical stage 为 `proposal-tournament`。
 
 ## Inputs
 
-- `ideas.json`
-- `novelty_check.md`
+- `idea_tree.json`
+- `safe_claims.md`
+- `taste_scores.json`
 
 ## Outputs
 
+- `runs/<run_id>/artifacts/proposal_tournament.md`
+- `runs/<run_id>/artifacts/reviewer_objections.json`
+- `runs/<run_id>/artifacts/revision_actions.md`
 - `runs/<run_id>/artifacts/ranked_proposals.md`
-- `runs/<run_id>/artifacts/review_report.json`
-- `runs/<run_id>/checkpoints/proposal-ranking.json`
 
 ## Procedure
 
-1. 剔除不可执行或高撞题且无替代路线的 ideas。
-2. 输出 top 1-3 proposal，附三维评分与排序理由。
-3. 使用 reviewer-panel 给出反对意见与修订建议。
+1. 使用 `skills/proposal-tournament/SKILL.md` 的多评审对抗流程。
+2. 不再使用 `novelty/feasibility/impact` 三维作为唯一排序标准。
 
 ## Stop Conditions
 
-- ranked proposals 数量在 1-3。
-- 每个 proposal 包含 novelty/feasibility/impact 评分。
+- 与 `proposal-tournament` 一致。
 
 ## Human Checkpoint
 
-- 必需：人类审批最终 shortlist。
+- 必需。
 

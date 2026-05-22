@@ -1,27 +1,38 @@
-# MVP Test Plan
+# v2 Test Plan
 
-## Scenario 1: Happy Path
+## Scenario 1: Happy Path (Canonical v2)
 
-- Input topic in NLP/LLM/Agent.
-- Retrieve 30-60 papers from 3 sources.
-- Produce 5-8 ideas and 1-3 deep proposals.
+- Input a domain-general direction.
+- Execute canonical stages through `research-planning`.
+- Confirm mandatory artifacts exist and checkpoints are writable.
 
-## Scenario 2: Novelty Collision
+## Scenario 2: Stage Alias Compatibility
 
-- Inject a high-similarity known paper.
-- Expect downgrade/red flag and alternative direction suggestions.
+- Use `idea-generation` / `novelty-check` / `proposal-ranking` in checkpoint command.
+- Expect normalization to `idea-tree-search` / `claim-novelty-check` / `proposal-tournament`.
 
-## Scenario 3: Human Loop
+## Scenario 3: Taste-first Gatekeeping
 
-- Edit outputs at `gap-mining`, `idea-generation`, `proposal-ranking`.
-- Confirm pipeline can continue using updated artifacts.
+- Force low `representative_work_potential` in taste audit.
+- Confirm abstraction-lift remains required before tournament ranking.
 
-## Scenario 4: Source Degradation
+## Scenario 4: Claim Collision Pressure
 
-- Force one source failure.
-- Confirm other sources continue and error is recorded.
+- Inject high-collision claims into `claim_graph`.
+- Expect explicit `weaken`/`unsafe` status and rewrite actions.
 
-## Scenario 5: Acceptance Focus
+## Scenario 5: Construct Validity Correction
 
-- Evaluate proposal executability and venue positioning clarity.
+- Start with weak benchmark/metric alignment.
+- Confirm `construct-validity-audit` produces required plan revisions.
+
+## Scenario 6: Optional Stages
+
+- Skip `frontier-radar` and `run-postmortem`.
+- Confirm main pipeline is still valid while status marks them optional.
+
+## Scenario 7: Atomic Tool Regression
+
+- Keep dedupe/normalize/similarity behavior unchanged.
+- Confirm no orchestration logic moved into Python tools.
 

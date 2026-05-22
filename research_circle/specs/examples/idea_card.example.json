@@ -1,22 +1,22 @@
 {
-  "title": "Memory-grounded planner distillation for long-horizon agents",
-  "hypothesis": "Externalized planning memory can improve multi-step tool-use success rate with lower token budget.",
+  "title": "Mechanism-indexed evaluation protocol for multi-step decision pipelines",
+  "hypothesis": "Mechanism-indexed evaluation reveals failure modes that aggregate task scores hide.",
   "novelty_source": [
-    "Combining planner memory distillation with tool-feedback loops",
-    "Benchmarking under interruption-heavy long-horizon settings"
+    "Connects intervention-style diagnostics with benchmark design",
+    "Separates mechanism-level failure from end-task metric fluctuations"
   ],
-  "method_sketch": "Train a planner head with memory snapshots and tool trajectory summaries.",
-  "experiment_sketch": "Evaluate on long-horizon agent tasks with interruption and recovery metrics.",
-  "risks": ["Weak generalization across tool APIs", "Label quality for memory summaries"],
+  "method_sketch": "Define mechanism probes and intervention controls, then evaluate under matched task families.",
+  "experiment_sketch": "Compare standard aggregate metrics vs mechanism-indexed metrics across robust and stress settings.",
+  "risks": ["Probe design may be noisy", "Intervention controls may increase evaluation cost"],
   "similar_work": [
     {
-      "paper_id": "arxiv:2501.00001",
-      "reason": "Uses memory but lacks distillation objective"
+      "paper_id": "paper:12345",
+      "reason": "Studies robustness metrics but not mechanism-indexed diagnostics"
     }
   ],
   "scores": {
-    "novelty": 74,
-    "feasibility": 70,
-    "impact": 78
+    "novelty": 76,
+    "feasibility": 68,
+    "impact": 82
   }
 }

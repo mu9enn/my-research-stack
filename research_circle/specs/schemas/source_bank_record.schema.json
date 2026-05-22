@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://full-circle.local/schemas/source_bank_record.schema.json",
+  "title": "SourceBankRecord",
+  "type": "object",
+  "required": ["source_id", "title", "source_type", "authority_level"],
+  "properties": {
+    "source_id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "url": { "type": "string", "format": "uri" },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "paper",
+        "official_doc",
+        "technical_spec",
+        "repo",
+        "benchmark",
+        "leaderboard",
+        "dataset",
+        "model_card",
+        "dataset_card",
+        "release_note",
+        "standard",
+        "security_advisory",
+        "blog",
+        "other"
+      ]
+    },
+    "authority_level": {
+      "type": "string",
+      "enum": ["primary", "secondary", "tertiary"]
+    },
+    "stability": {
+      "type": "string",
+      "enum": ["stable", "evolving", "deprecated", "unknown"]
+    },
+    "supports_claims": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "contradicts_claims": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": true
+}

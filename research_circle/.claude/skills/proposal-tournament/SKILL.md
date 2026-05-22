@@ -1,0 +1,1 @@
+../../../skills/proposal-tournament/SKILL.md

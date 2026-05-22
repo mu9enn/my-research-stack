@@ -1,17 +1,17 @@
-# Full Circle: Project Memory
+# Full Circle: Project Memory (v2)
 
 ## Positioning
 
-A-conference oriented research idea discovery copilot.
+Taste-first, claim-centric scientific exploration copilot.
 
-This project is not a local autonomous pipeline runner. The reasoning flow is controlled by skills/agents in interactive agent sessions.
+This project is not a local autonomous pipeline runner. Reasoning flow is controlled by skills/agents in interactive sessions.
 
 ## Non-Negotiable Rules
 
 1. Do not implement orchestration logic in Python.
 2. Use stage artifacts for handoff; do not rely on hidden context.
 3. Keep novelty decisions evidence-backed with source links.
-4. Human checkpoint is required at `gap-mining`, `idea-generation`, and `proposal-ranking`.
+4. Required human checkpoints for v2: `gap-mining`, `taste-audit`, `abstraction-lift`, `idea-tree-search`, `proposal-tournament`, `construct-validity-audit`.
 
 ## Directory Contracts
 
@@ -23,5 +23,5 @@ This project is not a local autonomous pipeline runner. The reasoning flow is co
 ## Platform Mapping
 
 - Codex: use `skills/` and `agents/` directly.
-- Claude Code: consume mirrored files in `.claude/skills` and `.claude/agents`.
+- Claude Code: consume mirrors in `.claude/skills` and `.claude/agents`.
 

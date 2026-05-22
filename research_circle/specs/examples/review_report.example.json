@@ -1,24 +1,24 @@
 {
-  "idea_title": "Memory-grounded planner distillation for long-horizon agents",
+  "idea_title": "Mechanism-indexed evaluation protocol for multi-step decision pipelines",
   "scores": {
-    "novelty": 72,
-    "feasibility": 68,
-    "impact": 76
+    "novelty": 75,
+    "feasibility": 66,
+    "impact": 81
   },
   "objections": [
     {
       "reviewer": "R1",
       "severity": "high",
-      "text": "Need stronger baseline selection justification."
+      "text": "Baseline selection does not yet cover strongest recent evaluation protocols."
     },
     {
       "reviewer": "R2",
       "severity": "medium",
-      "text": "Interruption metric definition is currently ambiguous."
+      "text": "Need clearer mapping from probe outcomes to final thesis claims."
     }
   ],
   "revision_suggestions": [
-    "Add two recent long-horizon agent baselines",
-    "Clarify interruption/recovery metric protocol"
+    "Add stronger baseline protocols from adjacent subfields",
+    "Explicitly map each metric to claim-level evidence"
   ]
 }

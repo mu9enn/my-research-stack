@@ -41,6 +41,27 @@
       "type": "string",
       "enum": ["zh", "en"]
     },
+    "taste_target": {
+      "type": "string",
+      "enum": ["workshop", "findings", "main-track", "representative-work"]
+    },
+    "risk_preference": {
+      "type": "string",
+      "enum": ["conservative", "balanced", "aggressive"]
+    },
+    "desired_abstraction_level": {
+      "type": "string",
+      "enum": ["phenomenon", "mechanism", "framework", "theory", "agenda"]
+    },
+    "must_not_be": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "main_objection": { "type": "string" },
+    "pivot_permission": {
+      "type": "string",
+      "enum": ["none", "moderate", "aggressive"]
+    },
     "created_at": { "type": "string", "format": "date-time" }
   },
   "additionalProperties": true

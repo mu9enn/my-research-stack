@@ -2,11 +2,13 @@
 
 ## Purpose
 
-识别可投稿导向的研究空白，并产出可验证 gap 列表。
+识别可投稿导向的研究空白，并区分局部缺口与结构性缺口。
 
 ## Inputs
 
 - `literature_map.md`
+- `contradiction_map.md`
+- `evidence_strength_table.md`
 - `paper_bank.jsonl`
 
 ## Outputs
@@ -16,15 +18,29 @@
 
 ## Procedure
 
-1. 识别方法、设定、评测、资源四类空白。
-2. 给出每个 gap 的证据论文与反例。
-3. 标记 gap 风险级别（高/中/低）。
-4. 形成 top gaps shortlist。
+1. 提取候选 gaps，并按 `local | structural | field_defining` 分类。
+2. 对每个 gap 给出：`why_now`、`who_cares`、证据与反例。
+3. 评分：`abstraction_level`、`representative_work_potential`、`risk_of_being_incremental`。
+4. 输出 top gaps shortlist，并标注哪些只是 benchmark/tool/dataset 缺口。
+
+## Required Gap Fields
+
+```json
+{
+  "gap_type": "local | structural | field_defining",
+  "why_now": "",
+  "who_cares": "",
+  "abstraction_level": 1,
+  "representative_work_potential": 1,
+  "risk_of_being_incremental": 1
+}
+```
 
 ## Stop Conditions
 
 - 至少产出 5 个 gap。
 - 每个 gap 至少绑定 2 条证据。
+- 每个 gap 均包含 required gap fields。
 
 ## Human Checkpoint
 

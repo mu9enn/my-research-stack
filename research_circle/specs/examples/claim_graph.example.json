@@ -1,0 +1,15 @@
+{
+  "claims": [
+    {
+      "claim_id": "claim-01",
+      "claim_text": "Mechanism-indexed diagnostics reveal failure patterns hidden by aggregate task metrics.",
+      "claim_type": "empirical",
+      "status": "safe",
+      "collision_sources": ["paper:xyz987"],
+      "why_collision_matters": "Prior work has adjacent metrics but narrower settings.",
+      "safe_rewrite": "In heterogeneous task families, mechanism-indexed diagnostics reveal additional failure patterns.",
+      "claims_to_avoid": ["first-ever discovery"],
+      "related_work_positioning": "extends prior metric analyses to mechanism-indexed diagnostic evaluation"
+    }
+  ]
+}

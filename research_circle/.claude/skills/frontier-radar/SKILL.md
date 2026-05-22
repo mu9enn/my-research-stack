@@ -1,0 +1,1 @@
+../../../skills/frontier-radar/SKILL.md

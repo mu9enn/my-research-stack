@@ -1,30 +1,31 @@
-# Skill: literature-review
+# Skill: literature-review (Compatibility Alias)
 
 ## Purpose
 
-从 `paper_bank` 形成领域地图和问题分层。
+兼容旧阶段名。执行逻辑与 `literature-map` 相同，canonical stage 为 `literature-map`。
 
 ## Inputs
 
 - `paper_bank.jsonl`
+- `source_bank.jsonl`（可选）
 
 ## Outputs
 
 - `runs/<run_id>/artifacts/literature_map.md`
+- `runs/<run_id>/artifacts/contradiction_map.md`
+- `runs/<run_id>/artifacts/evidence_strength_table.md`
+- `runs/<run_id>/artifacts/unsupported_claims.md`
 
 ## Procedure
 
-1. 按任务、方法、评测、数据集聚类。
-2. 提取每簇代表论文与核心结论。
-3. 标注证据链（paper_id/url）。
-4. 输出结构化地图：趋势、共识、分歧。
+1. 使用 `skills/literature-map/SKILL.md` 的完整流程。
+2. 在 checkpoint 中统一写入 `literature-map`。
 
 ## Stop Conditions
 
-- `literature_map.md` 至少包含 3 个主题簇。
-- 每个主题簇至少 3 篇引用。
+- 与 `literature-map` 完全一致。
 
 ## Human Checkpoint
 
-- 非强制。
+- 推荐。
 

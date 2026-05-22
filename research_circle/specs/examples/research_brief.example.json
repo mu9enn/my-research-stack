@@ -1,16 +1,22 @@
 {
-  "direction": "Long-horizon tool-use planning for LLM agents",
+  "direction": "Mechanism-aware evaluation for multi-step decision systems",
   "constraints": [
-    "Prefer open datasets",
-    "Two-week prototype window"
+    "Prefer open datasets and reproducible benchmarks",
+    "Prototype should be achievable in two weeks"
   ],
   "resources": {
-    "compute": "8xA100 for peak runs",
+    "compute": "Mid-scale shared GPU cluster",
     "team": "1-2 researchers",
     "time_budget_weeks": 12
   },
   "target_venues": ["ICLR", "NeurIPS"],
-  "forbidden_items": ["Closed proprietary datasets"],
+  "forbidden_items": ["Pure benchmark leaderboard chasing"],
   "language": "zh",
+  "taste_target": "main-track",
+  "risk_preference": "balanced",
+  "desired_abstraction_level": "framework",
+  "must_not_be": ["benchmark-only", "minor-extension"],
+  "main_objection": "担心 novelty claim defensibility",
+  "pivot_permission": "moderate",
   "created_at": "2026-05-14T00:00:00Z"
 }
