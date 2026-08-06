@@ -11,11 +11,6 @@ venv/
 runs/*
 !runs/.gitkeep
 
-# Reference repositories are cloned locally via SSH and not committed
-references/*
-!references/README.md
-!references/LOCKFILE.md
-
 # OS/editor
 .DS_Store
 .vscode/

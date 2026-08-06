@@ -1,0 +1,19 @@
+{
+  "response_id": "demo-decision-response",
+  "type": "result_decision",
+  "attempt_id": "attempt-0001",
+  "action": "continue",
+  "rationale": "The fixed evaluator exceeded the baseline by more than the predeclared delta.",
+  "evidence_ids": ["evidence-0001", "evidence-0002"],
+  "claim_updates": [
+    {
+      "claim_id": "claim-0001",
+      "assessment": "supported",
+      "reason": "Support is limited to the deterministic toy setting and one fixed evaluator."
+    }
+  ],
+  "paper_note": {
+    "section": "results",
+    "text": "In the deterministic fixture, the intervention exceeded the predeclared minimum improvement; this supports only the scoped toy claim."
+  }
+}

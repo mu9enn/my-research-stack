@@ -1,1 +1,0 @@
-../../agents/frontier-scout.md

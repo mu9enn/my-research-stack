@@ -1,1 +1,0 @@
-../../../skills/run-postmortem/SKILL.md

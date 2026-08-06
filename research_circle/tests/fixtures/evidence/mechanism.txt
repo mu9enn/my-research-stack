@@ -1,0 +1,1 @@
+Controlled interventions can distinguish a mechanism-level explanation from aggregate performance changes. The decisive test varies the proposed mechanism while holding the surrounding task fixed.

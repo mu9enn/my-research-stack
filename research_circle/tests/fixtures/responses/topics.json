@@ -1,0 +1,63 @@
+{
+  "response_id": "demo-topic-response",
+  "type": "topic_synthesis",
+  "direction_summary": "Mechanism-aware evaluation with a deterministic executable fixture.",
+  "candidates": [
+    {
+      "id": "topic-1",
+      "title": "Intervention-sensitive diagnostic",
+      "question": "Does the intervention improve the fixed diagnostic score?",
+      "hypothesis": "The intervention raises the score by at least 0.1.",
+      "claim": "In the toy setting, the intervention improves the fixed diagnostic score.",
+      "why_valuable": "It tests a scoped mechanism instead of treating successful execution as evidence.",
+      "abstraction_level": "mechanism",
+      "incremental_risk": "low",
+      "novelty": {
+        "status": "plausible",
+        "evidence_ids": ["evidence-0001", "evidence-0002"],
+        "uncertainty": "The result is intentionally limited to the fixture."
+      },
+      "falsifier": "A score below 0.6 under the fixed evaluator.",
+      "smallest_test": "Run the deterministic fixture once.",
+      "risks": ["Limited external validity"]
+    },
+    {
+      "id": "topic-2",
+      "title": "Evaluator sensitivity boundary",
+      "question": "When does the fixed evaluator stop detecting the intervention?",
+      "hypothesis": "Small effects fall below the minimum meaningful delta.",
+      "claim": "The fixed evaluator has a measurable sensitivity boundary.",
+      "why_valuable": "It distinguishes an absent effect from evaluator insensitivity.",
+      "abstraction_level": "mechanism",
+      "incremental_risk": "low",
+      "novelty": {
+        "status": "plausible",
+        "evidence_ids": ["evidence-0001", "evidence-0002"],
+        "uncertainty": "Only a toy evaluator is covered."
+      },
+      "falsifier": "Scores remain equally separable at every tested effect size.",
+      "smallest_test": "Sweep two effect sizes around the delta.",
+      "risks": ["Threshold dependence"]
+    },
+    {
+      "id": "topic-3",
+      "title": "Negative-result diagnostic value",
+      "question": "Can a non-improving run still rule out the named mechanism?",
+      "hypothesis": "A valid non-improving metric weakens the scoped mechanism claim.",
+      "claim": "A valid negative result updates the mechanism claim without conflating execution failure.",
+      "why_valuable": "It makes failed hypotheses useful while preserving execution semantics.",
+      "abstraction_level": "framework",
+      "incremental_risk": "low",
+      "novelty": {
+        "status": "plausible",
+        "evidence_ids": ["evidence-0001", "evidence-0002"],
+        "uncertainty": "The workflow behavior needs broader validation."
+      },
+      "falsifier": "Negative metrics cannot distinguish the mechanism from a confound.",
+      "smallest_test": "Run a controlled negative-effect fixture.",
+      "risks": ["Workflow-specific evidence"]
+    }
+  ],
+  "recommended_id": "topic-1",
+  "stop": {"needs_human": false, "reason": ""}
+}

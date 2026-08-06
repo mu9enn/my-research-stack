@@ -1,1 +1,0 @@
-../../../skills/idea-tree-search/SKILL.md

@@ -1,27 +1,5 @@
-# Full Circle: Project Memory (v2)
+# Research Circle project memory
 
-## Positioning
+The single workflow is `skills/research-loop/SKILL.md` (mirrored by one `.claude` symlink).
 
-Taste-first, claim-centric scientific exploration copilot.
-
-This project is not a local autonomous pipeline runner. Reasoning flow is controlled by skills/agents in interactive sessions.
-
-## Non-Negotiable Rules
-
-1. Do not implement orchestration logic in Python.
-2. Use stage artifacts for handoff; do not rely on hidden context.
-3. Keep novelty decisions evidence-backed with source links.
-4. Required human checkpoints for v2: `gap-mining`, `taste-audit`, `abstraction-lift`, `idea-tree-search`, `proposal-tournament`, `construct-validity-audit`.
-
-## Directory Contracts
-
-- Canonical skills: `skills/*/SKILL.md`
-- Canonical agents: `agents/*.md`
-- Atomic tools only: `tools/bin/*.py`
-- Artifact schemas: `specs/schemas/*.schema.json`
-
-## Platform Mapping
-
-- Codex: use `skills/` and `agents/` directly.
-- Claude Code: consume mirrors in `.claude/skills` and `.claude/agents`.
-
+`state.json` is canonical. Prompts reason; Python validates, executes, recovers, and renders. Human approval is mandatory for the core claim, large resources, major pivots, and submission. Critics are advisory and never own research facts.

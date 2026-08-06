@@ -1,1 +1,0 @@
-../../../skills/construct-validity-audit/SKILL.md

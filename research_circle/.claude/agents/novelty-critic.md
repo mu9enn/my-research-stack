@@ -1,1 +1,0 @@
-../../agents/novelty-critic.md

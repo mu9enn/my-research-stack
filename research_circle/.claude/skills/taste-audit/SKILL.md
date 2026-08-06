@@ -1,1 +1,0 @@
-../../../skills/taste-audit/SKILL.md

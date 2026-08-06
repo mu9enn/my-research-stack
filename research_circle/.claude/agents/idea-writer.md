@@ -1,1 +1,0 @@
-../../agents/idea-writer.md

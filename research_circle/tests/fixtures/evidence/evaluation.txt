@@ -1,0 +1,1 @@
+A fixed evaluator and an explicit minimum meaningful difference make sequential experiments comparable. Negative results remain informative when the test rules out a named mechanism rather than merely failing to run.

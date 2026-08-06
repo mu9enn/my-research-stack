@@ -1,1 +1,0 @@
-../../../skills/literature-map/SKILL.md

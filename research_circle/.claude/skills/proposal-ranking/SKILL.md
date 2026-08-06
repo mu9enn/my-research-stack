@@ -1,1 +1,0 @@
-../../../skills/proposal-ranking/SKILL.md

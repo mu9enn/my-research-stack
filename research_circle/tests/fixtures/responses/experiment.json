@@ -1,0 +1,29 @@
+{
+  "response_id": "demo-experiment-response",
+  "type": "experiment_design",
+  "topic_id": "topic-1",
+  "hypothesis": "The intervention raises score by at least 0.1.",
+  "claim_ids": ["claim-0001"],
+  "code_files": ["experiment.py"],
+  "command": ["python3", "experiment.py", "--output", "{output_dir}/metrics.json", "--effect", "0.2"],
+  "workdir": ".",
+  "timeout_seconds": 10,
+  "metrics_file": "metrics.json",
+  "required_metrics": ["score"],
+  "evaluator": {
+    "primary_metric": "score",
+    "direction": "maximize",
+    "baseline": 0.5,
+    "minimum_delta": 0.1
+  },
+  "validity": {
+    "metric_claim_alignment": "The score directly operationalizes the scoped toy claim.",
+    "baseline_rationale": "The no-effect fixture emits 0.5.",
+    "confounds": [],
+    "negative_result_value": "A non-improving valid run rejects this intervention in the fixture.",
+    "risk": "low"
+  },
+  "resource_class": "small",
+  "stochastic": false,
+  "replications": 1
+}

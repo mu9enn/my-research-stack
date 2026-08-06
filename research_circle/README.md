@@ -1,106 +1,58 @@
-# Research Circle v2 (Taste-first, Claim-centric, Reframing-driven)
+# Research Circle
 
-Research Circle v2 is a domain-general scientific exploration system.
+Research Circle is a small, evidence-driven research loop for PhD work. It keeps one canonical research state and separates responsibilities clearly:
 
-It upgrades the v1 linear MVP into a workflow that can actively audit research taste,
-reframe shallow topics, check novelty at claim level, and validate whether experiments
-actually support the thesis.
+- the researcher approves the direction, core claim, major pivots, large resource use, and submission;
+- the model proposes topics and experiments, interprets evidence, and drafts scoped material;
+- the program validates transitions, executes experiments, records immutable results, recovers interrupted runs, and renders the working paper record.
 
-## Canonical Workflow
+The loop is:
 
-1. intake
-2. frontier-radar (optional, recommended)
-3. literature-search
-4. literature-map
-5. gap-mining
-6. taste-audit
-7. abstraction-lift
-8. idea-tree-search
-9. claim-novelty-check
-10. proposal-tournament
-11. construct-validity-audit
-12. research-planning
-13. run-postmortem (optional, recommended)
+`evidence → candidate topics → human-approved claim → executable experiment → fixed evaluator → result decision → paper update → next experiment`
 
-## Design Principles
+There are no permanent stage agents. Novelty, research quality (taste + abstraction), and validity critics are invoked only when risk requires them.
 
-- Orchestration and decision logic live in Skills/Agents, not Python.
-- Python is only used for atomic tools (search, normalization, dedupe, similarity, export).
-- Stage transitions are explicit and artifact-based.
-- Human checkpoints remain required and now carry richer structured feedback.
-- The framework is domain-general and should not be specialized to one research field.
-
-## Repository Layout
-
-- `skills/`: canonical workflow instructions
-- `agents/`: role definitions
-- `tools/`: atomic Python tools only
-- `runs/`: stage artifacts for each run
-- `references/`: SSH-cloned external projects (read-only reference)
-- `specs/`: artifact protocol and JSON Schemas
-- `docs/`: workflow and migration docs
-
-## Quick Start
-
-### 1) Create run workspace
+## Quick start
 
 ```bash
-./bin/fc init-run --topic "General scientific direction"
+./bin/fc init \
+  --run-id my-study \
+  --direction "A falsifiable research direction" \
+  --project /absolute/path/to/experiment-repo
+
+./bin/fc evidence add \
+  --run-id my-study \
+  --file /absolute/path/to/source-excerpt.txt \
+  --title "Primary source" \
+  --locator "page 4, section 2"
+
+./bin/fc next --run-id my-study
 ```
 
-### 2) Check run status
+`fc next` returns one prompt packet and JSON response template. Apply the completed response, follow any human approval request, and execute only when the state asks for it:
 
 ```bash
-./bin/fc status --run-id <run_id>
+./bin/fc apply --run-id my-study --response /path/to/response.json
+./bin/fc approve --run-id my-study --topic-id topic-1
+./bin/fc execute --run-id my-study
+./bin/fc status --run-id my-study
 ```
 
-### 3) Record human checkpoint decision
+Every run lives in `runs/<run_id>/`:
+
+- `state.json`: the only authority for topic, claim, experiment, result, and decision state;
+- `state.prev.json`: last valid recovery snapshot;
+- `attempts/<attempt_id>/`: immutable input, stdout, stderr, and metrics;
+- `paper.md`: generated research/paper material with evidence and attempt provenance.
+
+## Evidence semantics
+
+`fc evidence search` queries arXiv, OpenAlex, and Semantic Scholar concurrently. A partial response is retained with explicit coverage errors rather than discarded. Search abstracts are discovery evidence and trigger novelty review; use `evidence add` with a located source excerpt for claim-level support.
+
+## Testing
 
 ```bash
-./bin/fc checkpoint \
-  --run-id <run_id> \
-  --stage taste-audit \
-  --decision approved \
-  --note "允许中等强度 pivot" \
-  --taste-target main-track \
-  --risk-preference balanced \
-  --desired-abstraction-level framework \
-  --must-not-be "benchmark-only,minor-extension" \
-  --pivot-permission moderate
+pytest -q
 ```
 
-### 4) Clone references via SSH
-
-```bash
-./bin/clone_references.sh
-```
-
-### 5) Run 3-source atomic retrieval (fail-soft)
-
-```bash
-./tools/bin/search_all_sources.sh \
-  --query "general research query" \
-  --output-dir runs/<run_id>/artifacts \
-  --max-results 20 \
-  --top-k 60
-```
-
-## Schemas and Examples
-
-- JSON Schemas: `specs/schemas/`
-- Example payloads: `specs/examples/`
-
-## Backward-Compatible Stage Aliases
-
-- `literature-review` -> `literature-map`
-- `idea-generation` -> `idea-tree-search`
-- `novelty-check` -> `claim-novelty-check`
-- `proposal-ranking` -> `proposal-tournament`
-
-## Defaults
-
-- Output language: Chinese
-- Mode: Human-in-the-loop
-- Retrieval size: 30-80 papers
-- Platform: Codex-first, Claude Code compatible
-
+The suite runs a real subprocess-backed toy experiment, positive and negative decision paths, execution failures, timeout, invalid metrics, critic routing, atomic state recovery, and interrupted-attempt retry.

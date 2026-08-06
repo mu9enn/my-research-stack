@@ -1,1 +1,0 @@
-../../agents/gap-analyst.md
